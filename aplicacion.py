@@ -30,10 +30,11 @@ def listar_productos():
         cursor = con.cursor()
         cursor.execute(sql)
         productos = cursor.fetchall()
-        print("ID\tCódigo\tNombre\tPrecio")
-        print("-"*50)
-        for producto in productos:
-            print(producto[0], producto[1], producto[2], producto[3], sep="\t")
+        print("{:<10} {:<15} {:<40} {:<15}".format("ID", "Código", "Nombre", "Precio"))
+        print("-"*80)
+        for idproducto, codigo, nombre, precio in productos:
+            print("{:<10} {:<15} {:<40} {:<15}".format(
+                idproducto, codigo, nombre, precio))
 
 
 def registrar_producto(codigo, nombre, precio):
@@ -44,29 +45,47 @@ def registrar_producto(codigo, nombre, precio):
         con.commit()
         print("Producto registrado con éxito")
 
-# Registrar 10 productos
-def registrar_10_productos():
-    productos = [
-        ("P001", "Café Tunki", 25.00),
-        ("P002", "Chocolates La Iberica", 15.50),
-        ("P003", "Pisco Portón", 80.00),
-        ("P004", "Aceitunas Botija", 12.00),
-        ("P005", "Chicha Morada", 5.00),
-        ("P006", "Cerveza Cusqueña", 8.00),
-        ("P007", "Inka Kola", 3.50),
-        ("P008", "Papa Seca", 6.00),
-        ("P009", "Leche Gloria", 4.50),
-        ("P010", "Cuy Asado", 30.00)
-    ]
-    sql = "INSERT INTO producto (codigo, nombre, precio) VALUES (?,?,?)"
+
+def eliminar_producto(idproducto):
+    sql = "DELETE FROM producto WHERE idproducto=?"
     with sqlite3.connect("AsuncionPomasonco_almacen.db") as con:
         cursor = con.cursor()
-        cursor.executemany(sql, productos)
-        print("10 productos insertados con éxito")
+        cursor.execute(sql, (idproducto,))
+        print("Producto eliminado con éxito")
 
 
-# while True:
-#     menu()
-#     opcion = int(input("Seleccionar una opción: "))
+def editar_producto(idproducto, codigo, nombre, precio):
+    sql = "UPDATE producto SET codigo=?, nombre=?, precio=? WHERE idproducto=?"
+    with sqlite3.connect("AsuncionPomasonco_almacen.db") as con:
+        cursor = con.cursor()
+        cursor.execute(sql, (codigo, nombre, precio, idproducto))
+        print("Producto actualizado con éxito")
 
-registrar_10_productos()
+
+while True:
+    menu()
+    opcion = int(input("Seleccionar una opción: "))
+    if opcion == 1:
+        codigo = input("Ingrese código: ")
+        nombre = input("Ingrese nombre: ")
+        precio = float(input("Ingrese precio: "))
+        registrar_producto(codigo, nombre, precio)
+    elif opcion == 2:
+        listar_productos()
+        idproducto = int(input("Ingrese ID del producto a eliminar: "))
+        eliminar_producto(idproducto)
+    elif opcion == 3:
+        listar_productos()
+        idproducto = int(input("Ingrese ID del producto a editar: "))
+        codigo = input("Ingrese código: ")
+        nombre = input("Ingrese nombre: ")
+        precio = float(input("Ingrese precio: "))
+        editar_producto(idproducto, codigo, nombre, precio)
+    elif opcion == 4:
+        listar_productos()
+    elif opcion == 5:
+        break
+    else:
+        print("Opción incorrecta")
+
+print("Fin del programa")
