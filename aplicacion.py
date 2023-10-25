@@ -1,3 +1,19 @@
+import sqlite3
+
+#Conexion a base de datos
+conexion = sqlite3.connect("AsuncionPomasonco_almacen.db")
+cursor = conexion.cursor()
+#Crear tabla producto
+tabla_producto = """CREATE TABLE producto(
+                idproducto INTEGER PRIMARY KEY AUTOINCREMENT,
+                codigo TEXT UNIQUE,
+                nombre TEXT UNIQUE,
+                precio REAL
+                )"""
+cursor.execute(tabla_producto)
+cursor.close()
+conexion.close()
+
 def menu():
     print("Menú Opciones")
     print("1. Registrar")
